@@ -2,11 +2,6 @@ name: Path-Based Job Trigger Test
 
 on:
   push:
-    paths:
-      - "extension/**"
-      - "auth-ui/**"
-      - "backend/**"
-      - "infra/**"
 
 jobs:
   check-changes:
