@@ -1,0 +1,49 @@
+name: Path-Based Job Trigger Test
+
+on:
+  push:
+    paths:
+      - "extension/**"
+      - "auth-ui/**"
+      - "backend/**"
+      - "infra/**"
+
+jobs:
+  check-changes:
+    name: Check Modified Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log Modified Files
+        run: echo '${{ toJSON(github.event.commits[0].modified) }}'
+
+  subfolder1-job:
+    name: Extension Job
+    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'extension/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Extension
+        run: echo "Changes detected in extension"
+
+  subfolder2-job:
+    name: AuthUI Job
+    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'auth-ui/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo AuthUI
+        run: echo "Changes detected in auth-ui"
+
+  subfolder3-job:
+    name: Backend Job
+    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'backend/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Backend
+        run: echo "Changes detected in backend"
+
+  subfolder4-job:
+    name: Infra Job
+    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'infra/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Infra
+        run: echo "Changes detected in infra"
