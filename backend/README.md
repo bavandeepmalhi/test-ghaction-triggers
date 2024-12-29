@@ -1,1 +1,1 @@
-# test-ghaction-triggers
+1
