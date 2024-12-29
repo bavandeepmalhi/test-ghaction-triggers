@@ -1,44 +1,67 @@
-name: Path-Based Job Trigger Test
+name: Path-Based Trigger Test
 
 on:
   push:
 
 jobs:
-  check-changes:
-    name: Check Modified Files
+  filter-paths:
+    name: Filter Changed Paths
     runs-on: ubuntu-latest
+    outputs:
+      extension: ${{ steps.filter.outputs.extension }}
+      auth-ui: ${{ steps.filter.outputs.auth-ui }}
+      backend: ${{ steps.filter.outputs.backend }}
+      infra: ${{ steps.filter.outputs.infra }}
     steps:
-      - name: Log Modified Files
-        run: echo '${{ toJSON(github.event.commits.*.modified) }}'
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-  subfolder1-job:
+      - name: Filter Paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            extension:
+              - 'extension/**'
+            auth-ui:
+              - 'auth-ui/**'
+            backend:
+              - 'backend/**'
+            infra:
+              - 'infra/**'
+
+  extension-job:
     name: Extension Job
-    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'extension/') }}
+    needs: filter-paths
+    if: ${{ needs.filter-paths.outputs.extension == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Echo Extension
-        run: echo "Changes detected in extension"
+      - name: Echo Extension Changes
+        run: echo "Changes detected in the extension directory"
 
-  subfolder2-job:
-    name: AuthUI Job
-    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'auth-ui/') }}
+  auth-ui-job:
+    name: Auth UI Job
+    needs: filter-paths
+    if: ${{ needs.filter-paths.outputs.auth-ui == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Echo AuthUI
-        run: echo "Changes detected in auth-ui"
+      - name: Echo Auth UI Changes
+        run: echo "Changes detected in the auth-ui directory"
 
-  subfolder3-job:
+  backend-job:
     name: Backend Job
-    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'backend/') }}
+    needs: filter-paths
+    if: ${{ needs.filter-paths.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Echo Backend
-        run: echo "Changes detected in backend"
+      - name: Echo Backend Changes
+        run: echo "Changes detected in the backend directory"
 
-  subfolder4-job:
+  infra-job:
     name: Infra Job
-    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'infra/') }}
+    needs: filter-paths
+    if: ${{ needs.filter-paths.outputs.infra == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Echo Infra
-        run: echo "Changes detected in infra"
+      - name: Echo Infra Changes
+        run: echo "Changes detected in the infra directory"
