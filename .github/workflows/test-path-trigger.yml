@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Log Modified Files
-        run: echo '${{ toJSON(github.event.commits[0]) }}'
+        run: echo '${{ toJSON(github.event.commits.*.modified) }}'
 
   subfolder1-job:
     name: Extension Job
