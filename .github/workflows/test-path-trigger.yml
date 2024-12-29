@@ -30,6 +30,13 @@ jobs:
             infra:
               - 'infra/**'
 
+  check-poetry:
+    name: check poetry
+    runs-on: ubuntu-latest
+    steps:
+      - name: check
+        run: poetry init
+
   extension-job:
     name: Extension Job
     needs: filter-paths
